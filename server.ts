@@ -23,6 +23,9 @@ const stmts = {
   toggle: db.query<TodoRow, [number]>(
     "UPDATE todos SET done = 1 - done WHERE id = ? RETURNING *",
   ),
+  updateText: db.query<TodoRow, [string, number]>(
+    "UPDATE todos SET text = ? WHERE id = ? RETURNING *",
+  ),
   remove: db.query<TodoRow, [number]>(
     "DELETE FROM todos WHERE id = ? RETURNING *",
   ),
@@ -59,8 +62,19 @@ const server = Bun.serve({
     },
 
     "/api/todos/:id": {
-      PATCH: (req) => {
+      PATCH: async (req) => {
         const id = Number(req.params.id);
+        const ctype = req.headers.get("content-type") ?? "";
+        if (ctype.includes("application/json")) {
+          const body = (await req.json()) as { text?: unknown };
+          if (typeof body.text === "string") {
+            const text = body.text.trim();
+            if (!text) return json({ error: "text required" }, { status: 400 });
+            const row = stmts.updateText.get(text, id);
+            if (!row) return json({ error: "not found" }, { status: 404 });
+            return json(toTodo(row));
+          }
+        }
         const row = stmts.toggle.get(id);
         if (!row) return json({ error: "not found" }, { status: 404 });
         return json(toTodo(row));

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0b0c10" />
+    <title>Todo</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main>
+      <h1>Todo</h1>
+      <form id="add-form" autocomplete="off">
+        <input
+          id="add-input"
+          name="text"
+          type="text"
+          placeholder="What needs doing?"
+          required
+          maxlength="200"
+          enterkeyhint="done"
+        />
+        <button type="submit" aria-label="Add todo">Add</button>
+      </form>
+      <ul id="list" aria-live="polite"></ul>
+      <p id="empty" hidden>No todos yet — add one above.</p>
+    </main>
+    <script type="module" src="./client.ts"></script>
+  </body>
+</html>
